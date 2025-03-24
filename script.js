@@ -8,7 +8,7 @@ document.getElementById("uploadForm").addEventListener("submit", function(e) {
     }
 
     // データリスト（変換用）の取得
-    fetch("https://ryoup.github.io/magtan_only/" + new Date().getTime())
+    fetch("https://ryoup.github.io/magtan_only/data.csv?v=" + new Date().getTime())
         .then(response => response.text())
         .then(csvText => {
             const conversionTable = parseCSV(csvText);
