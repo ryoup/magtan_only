@@ -8,7 +8,7 @@ document.getElementById("uploadForm").addEventListener("submit", function(e) {
     }
 
     // データリスト（変換用）の取得
-    fetch("https://ryoup.github.io/13xJKeuZFtK9269Zk8JZHT3V3y0tbz2EQkL6Hw9n9YC4zxp33QmkYN8zLtb2k2xSsA2DNQEvy0nW580arezuxdCme3hN1g03RXQT/data.csv?v=" + new Date().getTime())
+    fetch("https://ryoup.github.io/magtan_only" + new Date().getTime())
         .then(response => response.text())
         .then(csvText => {
             const conversionTable = parseCSV(csvText);
@@ -38,7 +38,7 @@ function processImage(file, conversionTable) {
         const img = new Image();
         img.onload = function() {
             // 画像サイズチェック
-            if (img.width !== 1080 || img.height !== 2400) {
+            if (img.width !== 1170 || img.height !== 2532) {
                 document.getElementById("result").innerHTML = `<p style="color: red;">画像サイズが合っていません。</p>`;
                 return;
             }
@@ -53,7 +53,7 @@ function processImage(file, conversionTable) {
             const imageData = ctx.getImageData(0, 0, img.width, img.height);
             const data = imageData.data;
 
-            const xTargets = [218, 435, 650, 867]; // 検出するX座標
+            const xTargets = [237, 471, 705, 939]; // 検出するX座標
             let minYForX = {};
             let convertedValues = {};
 
@@ -74,7 +74,23 @@ function processImage(file, conversionTable) {
 
                     if (r >= 220 && g <= 100 && b <= 100) {
                         if (minYForX[x] === null) {
-                            minYForX[x] = y;
+                            let validY = y;
+                            let isValid = true;
+
+                            for (let checkY = y; checkY <= y + 20 && checkY < img.height; checkY++) {
+                                const checkIndex = (checkY * img.width + x) * 4;
+                                const checkG = data[checkIndex + 1];
+                                const checkB = data[checkIndex + 2];
+
+                                if (checkG > 100 || checkB > 100) {
+                                    isValid = false;
+                                    break;
+                                }
+                            }
+
+                            if (isValid) {
+                                minYForX[x] = y;
+                            }
                         }
                     }
                 }
@@ -106,10 +122,10 @@ function processImage(file, conversionTable) {
 
             // 出力は "1P: 数値", "2P: 数値", "3P: 数値", "4P: 数値"
             let resultsHTML = `<h2>解析結果</h2>`;
-            resultsHTML += `<p>1P : ${convertedValues[218]}</p>`;
-            resultsHTML += `<p>2P : ${convertedValues[435]}</p>`;
-            resultsHTML += `<p>3P : ${convertedValues[650]}</p>`;
-            resultsHTML += `<p>4P : ${convertedValues[867]}</p>`;
+            resultsHTML += `<p>1P : ${convertedValues[237]}</p>`;
+            resultsHTML += `<p>2P : ${convertedValues[471]}</p>`;
+            resultsHTML += `<p>3P : ${convertedValues[705]}</p>`;
+            resultsHTML += `<p>4P : ${convertedValues[939]}</p>`;
 
             document.getElementById("result").innerHTML = resultsHTML;
         };
